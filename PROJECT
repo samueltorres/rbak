@@ -1,0 +1,15 @@
+domain: samueltorr.es
+layout:
+- go.kubebuilder.io/v3
+projectName: rbak
+repo: github.com/samueltorres/rbak
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: samueltorr.es
+  group: rbac
+  kind: RbacReport
+  path: github.com/samueltorres/rbak/api/v1alpha1
+  version: v1alpha1
+version: "3"

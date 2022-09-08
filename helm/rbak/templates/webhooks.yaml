@@ -1,0 +1,30 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: {{ include "rbak.fullname" . }}
+  annotations:
+{{- if .Values.webhook.certManager.enabled }}
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "rbak.fullname" . }}-cert
+{{- end }}
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: {{ include "rbak.fullname" . }}
+      namespace: {{ .Release.Namespace }}
+      path: /validating
+  failurePolicy: Ignore
+  name: rbak.samueltorr.es
+  rules:
+  - apiGroups:
+    - "*"
+    apiVersions:
+    - "*"
+    operations:
+    - "*"
+    resources:
+    - "*"
+  sideEffects: None
+  timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}

@@ -1,0 +1,24 @@
+# permissions for end users to edit rbacreports.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rbacreport-editor-role
+rules:
+- apiGroups:
+  - rbac.samueltorr.es
+  resources:
+  - rbacreports
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rbac.samueltorr.es
+  resources:
+  - rbacreports/status
+  verbs:
+  - get

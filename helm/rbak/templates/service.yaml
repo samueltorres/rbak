@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rbak.fullname" . }}
+  labels:
+    {{- include "rbak.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 443
+      name: webhook
+      protocol: TCP
+      targetPort: webhook
+  selector:
+    {{- include "rbak.selectorLabels" . | nindent 4 }}
