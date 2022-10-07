@@ -42,6 +42,8 @@ spec:
                       items:
                         type: string
                       type: array
+                    namespace:
+                      type: string
                     resources:
                       items:
                         type: string

@@ -40,6 +40,9 @@ spec:
             - name: http
               containerPort: 8081
               protocol: TCP
+            - name: metrics
+              containerPort: 8080
+              protocol: TCP
             - name: webhook
               containerPort: 9443
               protocol: TCP
@@ -70,7 +73,16 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      {{- if .Values.webhook.certManager.enabled }}
       - name: webhook-server-cert
         secret:
           defaultMode: 420
           secretName: {{ include "rbak.fullname" . }}-webhook-server-cert
+      {{- end }}
+      {{- if .Values.webhook.cert.enabled }}
+      - name: webhook-server-cert
+        secret:
+          defaultMode: 420
+          secretName: {{ .Values.webhook.cert.secretName }}
+      {{- end }}
+     

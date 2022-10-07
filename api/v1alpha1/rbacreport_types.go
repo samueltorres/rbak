@@ -22,6 +22,7 @@ import (
 )
 
 type Rules struct {
+	Namespace string   `json:"namespace,omitempty"`
 	APIGroups []string `json:"apiGroups,omitempty"`
 	Resources []string `json:"resources,omitempty"`
 	Verbs     []string `json:"verbs,omitempty"`

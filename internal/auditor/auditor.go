@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/go-logr/logr"
 	rbakv1alpha1 "github.com/samueltorres/rbak/api/v1alpha1"
 	authenticationv1 "k8s.io/api/authentication/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -16,12 +17,14 @@ import (
 )
 
 type Auditor struct {
-	cli client.Client
+	cli    client.Client
+	logger logr.Logger
 }
 
-func New(cli client.Client) *Auditor {
+func New(cli client.Client, logger logr.Logger) *Auditor {
 	return &Auditor{
-		cli: cli,
+		cli:    cli,
+		logger: logger,
 	}
 }
 
@@ -29,10 +32,15 @@ func (a *Auditor) Audit(ctx context.Context, req webhook.AdmissionRequest) error
 	subject := userToSubject(req.UserInfo)
 	username := strings.Replace(subject.Name, ":", "-", -1)
 
+	ns := "kube-system"
+	if subject.Kind == "ServiceAccount" {
+		ns = subject.Namespace
+	}
+
 	rbacReport := rbakv1alpha1.RbacReport{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      username,
-			Namespace: req.Namespace,
+			Namespace: ns,
 		},
 	}
 
@@ -61,13 +69,16 @@ func (a *Auditor) addRule(rules []rbakv1alpha1.Rules, req webhook.AdmissionReque
 		if !contains(rules[i].Resources, req.Resource.Resource) {
 			continue
 		}
-
+		if rules[i].Namespace != req.Namespace {
+			continue
+		}
 		ruleIndex = i
 		break
 	}
 
 	if ruleIndex == -1 {
 		rules = append(rules, rbakv1alpha1.Rules{
+			Namespace: req.Namespace,
 			APIGroups: []string{req.Kind.Group},
 			Resources: []string{req.Resource.Resource},
 			Verbs:     []string{string(req.Operation)},

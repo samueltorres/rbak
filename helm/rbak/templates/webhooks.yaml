@@ -15,6 +15,9 @@ webhooks:
       name: {{ include "rbak.fullname" . }}
       namespace: {{ .Release.Namespace }}
       path: /validating
+{{- if .Values.webhook.cert.enabled }}
+    caBundle: {{ .Values.webhook.cert.caBundle | quote }}
+{{- end }}
   failurePolicy: Ignore
   name: rbak.samueltorr.es
   rules:
@@ -25,6 +28,6 @@ webhooks:
     operations:
     - "*"
     resources:
-    - "*"
+    - "*/*"
   sideEffects: None
   timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}

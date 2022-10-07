@@ -91,9 +91,14 @@ endif
 install-deps:
 	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/$(CERTMANAGER_VERSION)/cert-manager.yaml
 
+.PHONY: gen-certs
+gen-certs:
+	./hack/gen-certs.sh
+
 .PHONY: install
-install: manifests ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	helm upgrade -i rbak ./helm/rbak
+install: manifests kind-load ## Install CRDs into the K8s cluster specified in ~/.kube/config.
+	kubectl apply -f ./hack/webhook-secret.yaml
+	helm upgrade -i rbak ./helm/rbak -f ./hack/webhook-ca-values.yaml
 
 ##@ Build Dependencies
 

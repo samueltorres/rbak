@@ -64,8 +64,9 @@ func main() {
 	}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
+	logger := zap.New(zap.UseFlagOptions(&opts))
 
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+	ctrl.SetLogger(logger)
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
@@ -81,7 +82,7 @@ func main() {
 	}
 
 	client := mgr.GetClient()
-	auditor := auditor.New(client)
+	auditor := auditor.New(client, logger)
 	hookServer := &webhook.Server{
 		Port: 9443,
 	}
@@ -89,7 +90,7 @@ func main() {
 		setupLog.Error(err, "unable to create hook server")
 		os.Exit(1)
 	}
-	wh := rbakwebhooks.NewAuditorWebhook(auditor)
+	wh := rbakwebhooks.NewAuditorWebhook(auditor, logger)
 	hookServer.Register("/validating", wh)
 
 	//+kubebuilder:scaffold:builder
