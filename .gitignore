@@ -24,3 +24,5 @@ hack/webhook-*
 *.swp
 *.swo
 *~
+
+dist/

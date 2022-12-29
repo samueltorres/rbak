@@ -55,7 +55,7 @@ tolerations: []
 affinity: {}
 
 webhook:
-  timeoutSeconds: 5
+  timeoutSeconds: 2
   cert:
     enabled: true
     secretName: rbak-webhook-tls
