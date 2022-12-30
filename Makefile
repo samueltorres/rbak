@@ -99,6 +99,9 @@ gen-certs:
 install: manifests kind-load ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 	kubectl apply -f ./hack/webhook-secret.yaml
 	helm upgrade -i rbak ./helm/rbak -f ./hack/webhook-ca-values.yaml
+
+.PHONY: update
+update: kind-load
 	kubectl rollout restart deploy/rbak
 
 ##@ Build Dependencies

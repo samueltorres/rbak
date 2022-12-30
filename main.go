@@ -82,7 +82,13 @@ func main() {
 	}
 
 	client := mgr.GetClient()
-	auditor := auditor.New(client, logger)
+
+	auditor := auditor.New(client, logger, 15)
+	if err := mgr.Add(auditor); err != nil {
+		setupLog.Error(err, "unable to create auditor")
+		os.Exit(1)
+	}
+
 	hookServer := &webhook.Server{
 		Port: 9443,
 	}
