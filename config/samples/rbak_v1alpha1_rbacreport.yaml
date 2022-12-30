@@ -1,4 +1,4 @@
-apiVersion: rbac.samueltorr.es/v1alpha1
+apiVersion: rbak.samueltorr.es/v1alpha1
 kind: RbacReport
 metadata:
   name: rbacreport-sample

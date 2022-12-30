@@ -5,17 +5,27 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.8.0
   creationTimestamp: null
-  name: rbacreports.rbac.samueltorr.es
+  name: rbacreports.rbak.samueltorr.es
 spec:
-  group: rbac.samueltorr.es
+  group: rbak.samueltorr.es
   names:
     kind: RbacReport
     listKind: RbacReportList
     plural: rbacreports
     singular: rbacreport
-  scope: Namespaced
+  scope: Cluster
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.subject.kind
+      name: SubjectKind
+      type: string
+    - jsonPath: .spec.subject.name
+      name: SubjectName
+      type: string
+    - jsonPath: .spec.subject.namespace
+      name: SubjectNamespace
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: RbacReport is the Schema for the rbacreports API

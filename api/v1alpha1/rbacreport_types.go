@@ -37,12 +37,14 @@ type RbacReportSpec struct {
 
 // RbacReportStatus defines the observed state of RbacReport
 type RbacReportStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:scope=Cluster
+//+kubebuilder:printcolumn:name="SubjectKind",type="string",JSONPath=".spec.subject.kind"
+//+kubebuilder:printcolumn:name="SubjectName",type="string",JSONPath=".spec.subject.name"
+//+kubebuilder:printcolumn:name="SubjectNamespace",type="string",JSONPath=".spec.subject.namespace"
 
 // RbacReport is the Schema for the rbacreports API
 type RbacReport struct {

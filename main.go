@@ -32,7 +32,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	rbacv1alpha1 "github.com/samueltorres/rbak/api/v1alpha1"
+	rbakv1alpha1 "github.com/samueltorres/rbak/api/v1alpha1"
 	"github.com/samueltorres/rbak/internal/auditor"
 	rbakwebhooks "github.com/samueltorres/rbak/internal/webhooks"
 	//+kubebuilder:scaffold:imports
@@ -46,7 +46,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	utilruntime.Must(rbacv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(rbakv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 

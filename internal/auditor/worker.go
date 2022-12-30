@@ -2,6 +2,8 @@ package auditor
 
 import (
 	"context"
+	"fmt"
+	"hash/fnv"
 	"strings"
 	"sync"
 
@@ -17,15 +19,15 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
-type Worker struct {
+type worker struct {
 	wg     *sync.WaitGroup
 	cli    client.Client
 	logger logr.Logger
 	reqs   chan admissionv1.AdmissionRequest
 }
 
-func NewWorker(logger logr.Logger, cli client.Client, wg *sync.WaitGroup, reqs chan admissionv1.AdmissionRequest) *Worker {
-	return &Worker{
+func newWorker(logger logr.Logger, cli client.Client, wg *sync.WaitGroup, reqs chan admissionv1.AdmissionRequest) *worker {
+	return &worker{
 		logger: logger,
 		cli:    cli,
 		wg:     wg,
@@ -33,7 +35,7 @@ func NewWorker(logger logr.Logger, cli client.Client, wg *sync.WaitGroup, reqs c
 	}
 }
 
-func (w *Worker) Start(ctx context.Context) error {
+func (w *worker) Start(ctx context.Context) error {
 	defer w.wg.Done()
 
 	for {
@@ -49,7 +51,7 @@ func (w *Worker) Start(ctx context.Context) error {
 	}
 }
 
-func (w *Worker) handleAdmission(ctx context.Context, req admissionv1.AdmissionRequest) error {
+func (w *worker) handleAdmission(ctx context.Context, req admissionv1.AdmissionRequest) error {
 	subject := userToSubject(req.UserInfo)
 	username := strings.Replace(subject.Name, ":", "-", -1)
 
@@ -57,11 +59,12 @@ func (w *Worker) handleAdmission(ctx context.Context, req admissionv1.AdmissionR
 	if subject.Kind == "ServiceAccount" {
 		ns = subject.Namespace
 	}
+	hash := hash(fmt.Sprintf("%s-%s", username, ns))
+	reportName := fmt.Sprintf("%s-%d", username, hash)
 
 	rbacReport := rbakv1alpha1.RbacReport{
 		ObjectMeta: v1.ObjectMeta{
-			Name:      username,
-			Namespace: ns,
+			Name: reportName,
 		},
 	}
 
@@ -130,4 +133,10 @@ func contains(s []string, str string) bool {
 		}
 	}
 	return false
+}
+
+func hash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
 }

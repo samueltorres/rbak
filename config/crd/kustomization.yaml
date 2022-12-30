@@ -3,6 +3,7 @@
 # It should be run by config/default
 resources:
 - bases/rbac.samueltorr.es_rbacreports.yaml
+- bases/rbak.samueltorr.es_rbacreports.yaml
 #+kubebuilder:scaffold:crdkustomizeresource
 
 patchesStrategicMerge:

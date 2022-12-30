@@ -31,7 +31,7 @@ func (a *Auditor) Start(ctx context.Context) error {
 	wg := &sync.WaitGroup{}
 	for i := 0; i < int(a.workerCount); i++ {
 		wg.Add(1)
-		worker := NewWorker(a.logger, a.cli, wg, a.reqs)
+		worker := newWorker(a.logger, a.cli, wg, a.reqs)
 		go worker.Start(ctx)
 	}
 
