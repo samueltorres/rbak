@@ -51,9 +51,11 @@ func init() {
 }
 
 func main() {
+	var auditWorkers int
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
+	flag.IntVar(&auditWorkers, "audit-workers", 15, "The number of audit workers that will handle the admission requests.")
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
@@ -83,7 +85,7 @@ func main() {
 
 	client := mgr.GetClient()
 
-	auditor := auditor.New(client, logger, 15)
+	auditor := auditor.New(client, logger, auditWorkers)
 	if err := mgr.Add(auditor); err != nil {
 		setupLog.Error(err, "unable to create auditor")
 		os.Exit(1)

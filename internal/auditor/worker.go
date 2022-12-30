@@ -97,18 +97,20 @@ func addRule(rules []rbakv1alpha1.Rules, req admissionv1.AdmissionRequest) []rba
 		break
 	}
 
+	operation := strings.ToLower(string(req.Operation))
+
 	if ruleIndex == -1 {
 		rules = append(rules, rbakv1alpha1.Rules{
 			Namespace: req.Namespace,
 			APIGroups: []string{req.Kind.Group},
 			Resources: []string{req.Resource.Resource},
-			Verbs:     []string{string(req.Operation)},
+			Verbs:     []string{operation},
 		})
 		return rules
 	}
 
-	if !contains(rules[ruleIndex].Verbs, string(req.Operation)) {
-		rules[ruleIndex].Verbs = append(rules[ruleIndex].Verbs, string(req.Operation))
+	if !contains(rules[ruleIndex].Verbs, operation) {
+		rules[ruleIndex].Verbs = append(rules[ruleIndex].Verbs, operation)
 	}
 
 	return rules

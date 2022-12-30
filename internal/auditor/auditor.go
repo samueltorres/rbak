@@ -5,9 +5,8 @@ import (
 	"sync"
 	"time"
 
-	admissionv1 "k8s.io/api/admission/v1"
-
 	"github.com/go-logr/logr"
+	admissionv1 "k8s.io/api/admission/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
@@ -15,11 +14,11 @@ import (
 type Auditor struct {
 	cli         client.Client
 	logger      logr.Logger
-	workerCount int32
+	workerCount int
 	reqs        chan admissionv1.AdmissionRequest
 }
 
-func New(cli client.Client, logger logr.Logger, workerCount int32) *Auditor {
+func New(cli client.Client, logger logr.Logger, workerCount int) *Auditor {
 	return &Auditor{
 		cli:         cli,
 		logger:      logger,
@@ -46,11 +45,9 @@ func (a *Auditor) Audit(ctx context.Context, req webhook.AdmissionRequest) error
 	defer cancel()
 
 	select {
-	case a.reqs <- req.AdmissionRequest:
-		a.logger.Info("Handled the admission request in time")
-		return nil
 	case <-cctx.Done():
-		a.logger.Info("Couldn't handle the admission request in time")
 		return cctx.Err()
+	case a.reqs <- req.AdmissionRequest:
+		return nil
 	}
 }
