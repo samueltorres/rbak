@@ -65,3 +65,5 @@ webhook:
     issuerRef: {}
     useSelfSignedIssuer: true
     
+audit:
+  workers: 15

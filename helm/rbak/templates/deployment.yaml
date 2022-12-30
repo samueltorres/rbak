@@ -35,6 +35,7 @@ spec:
           - /manager
           args:
           - --leader-elect
+          - --audit-workers={{ .Values.audit.workers }}
           - --zap-log-level=info
           ports:
             - name: http
